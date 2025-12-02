@@ -1,6 +1,7 @@
+import os
 import time
 from enum import Enum
-from typing import Self
+from typing import Optional, Self
 
 import serial
 
@@ -20,10 +21,16 @@ class TiKitBoard:
         self.connected: bool = False
         self.port: str = port
         self.baud_rate: int = baud_rate
-        self.serial: serial.Serial | None = None
-        self._init()
+        self.max_retries: int = max_retries
+        self.serial: Optional[serial.Serial] = None
+        self.file_path: str = "data.txt"
+        self.timer_string: str = "timer_length="
+        self._init_storage()
 
-    def connect_with_retries(self: Self, max_retries: int = 3) -> None:
+    def connect_with_retries(self: Self, max_retries: Optional[int] = None) -> None:
+        if max_retries is None:
+            max_retries = self.max_retries
+
         num_tries: int = 0
         self.connected = False
         self.serial = None
@@ -39,9 +46,11 @@ class TiKitBoard:
                 num_tries += 1
                 time.sleep(1)
 
-    def _init(self: Self) -> None:
-        self.timer_string: str = "timer_length="
-        with open("data.txt", "w") as f:
+    def _init_storage(self: Self) -> None:
+        if os.path.isfile(self.file_path):
+            return
+
+        with open(self.file_path, "w") as f:
             f.write(f"{self.timer_string}6")
 
     def change_light_state(self: Self, light_state: LightState) -> None:
@@ -89,11 +98,7 @@ class TiKitBoard:
             self.serial = None
 
     def is_board_connected(self: Self) -> bool:
-        if self.serial is None:
-            self.connected = False
-            return False
-
-        if not getattr(self.serial, "is_open", False):
+        if self.serial is None or not getattr(self.serial, "is_open", False):
             self.connected = False
             return False
 

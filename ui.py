@@ -43,7 +43,7 @@ def unloaded_screen():
 
 @st.fragment(run_every="1s")
 def draw():
-    board = st.session_state.board
+    board: TiKitBoard = st.session_state.board
 
     if board.is_board_connected():
         loaded_screen()
