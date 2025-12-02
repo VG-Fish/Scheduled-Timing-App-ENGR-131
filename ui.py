@@ -45,6 +45,7 @@ def unloaded_screen():
 def draw():
     board: TiKitBoard = st.session_state.board
 
+    print(f"Is board connected: {board.is_board_connected()}")
     if board.is_board_connected():
         loaded_screen()
         board.check_serial()

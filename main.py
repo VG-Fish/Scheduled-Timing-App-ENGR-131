@@ -51,7 +51,9 @@ class TiKitBoard:
             return
 
         with open(self.file_path, "w") as f:
-            f.write(f"{self.timer_string}6")
+            f.write(
+                f"{self.timer_string}{6 * 60 * 60 * 1000}"
+            )  # 6 hours in milliseconds
 
     def change_light_state(self: Self, light_state: LightState) -> None:
         if not self.connected or self.serial is None:
@@ -62,19 +64,13 @@ class TiKitBoard:
         else:
             self.serial.write(b"light_off\n")
 
-    def _convert_hours_to_milliseconds(self: Self, x: float) -> int:
-        return int(x * 60 * 60 * 1000)
-
     def _get_timer_data(self: Self) -> int:
         if not self.connected:
             return -1
 
         with open("data.txt", "r") as f:
             data: str = f.readline()
-            current_timer_length_hr: float = float(data.partition("=")[-1])
-            current_timer_length_ms: int = self._convert_hours_to_milliseconds(
-                current_timer_length_hr
-            )
+            current_timer_length_ms: int = int(data.partition("=")[-1])
         return current_timer_length_ms
 
     def check_serial(self: Self) -> None:
@@ -96,6 +92,7 @@ class TiKitBoard:
             except Exception:
                 pass
             self.serial = None
+            print("No longer have serial in check_serial")
 
     def is_board_connected(self: Self) -> bool:
         if self.serial is None or not getattr(self.serial, "is_open", False):
@@ -113,4 +110,5 @@ class TiKitBoard:
             except Exception:
                 pass
             self.serial = None
+            print("No longer have serial in is_board_connected")
         return self.connected
