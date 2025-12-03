@@ -84,7 +84,6 @@ class TiKitBoard:
                     self.write_key_to_storage("timer_length", 0)
 
         except (OSError, serial.SerialException, AttributeError):
-            # lost connection mid-loop
             self.connected = False
             try:
                 self.serial.close()
