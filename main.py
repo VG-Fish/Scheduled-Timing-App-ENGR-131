@@ -11,6 +11,7 @@ class TiKitBoard:
         port: str = "/dev/cu.usbmodem1103",
         baud_rate: int = 9600,
         max_retries: int = 3,
+        special_ending_character: bytes = b"\n",
         storage_file_path: str = "data.txt",
     ) -> None:
         self.connected: bool = False
@@ -19,6 +20,7 @@ class TiKitBoard:
         self.baud_rate: int = baud_rate
         self.max_retries: int = max_retries
         self.serial: Optional[serial.Serial] = None
+        self.special_ending_character: bytes = special_ending_character
 
         self.storage_file_path: str = storage_file_path
         self.storage: Dict[str, Any] = {}
@@ -76,11 +78,11 @@ class TiKitBoard:
 
         try:
             if self.serial.in_waiting:
-                data: bytes = self.serial.read_until(b"\n")[:-1]
-                if data == b"load_timer_data":
-                    timer_length: str = f"{self._get_timer_data()}\n"
-                    print(f"Sending {timer_length.encode('utf-8')}")
-                    self.serial.write(timer_length.encode("utf-8"))
+                data: bytes = self.serial.read_until(self.special_ending_character)[:-1]
+                if data.startswith(b"timer="):
+                    key, _, value = data.partition(b"=")
+                    board.write_key_to_storage(str(key), value)
+
         except (OSError, serial.SerialException, AttributeError):
             # lost connection mid-loop
             self.connected = False
@@ -114,7 +116,7 @@ class TiKitBoard:
         if not self.connected or self.serial is None:
             return
 
-        self.serial.write(message)
+        self.serial.write(message + self.special_ending_character)
 
     def write_key_to_storage(self: Self, key: str, value: Any) -> None:
         if not self.connected or self.serial is None:

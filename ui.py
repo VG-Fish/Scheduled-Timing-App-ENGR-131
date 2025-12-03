@@ -1,3 +1,4 @@
+import time
 from datetime import timedelta
 
 import streamlit as st
@@ -14,7 +15,7 @@ if "board" not in st.session_state:
 
 def loaded_screen():
     board: TiKitBoard = st.session_state.board
-    st.markdown("# Scheduled Timing GUI")
+    st.markdown("# Scheduled Timing Test Mode GUI")
 
     if "light_state" not in st.session_state:
         st.session_state.light_state = False
@@ -23,13 +24,10 @@ def loaded_screen():
         st.session_state.light_state = not st.session_state.light_state
         print(st.session_state.light_state)
         if st.session_state.light_state:
-            board.send_message(b"light_on\n")
+            board.send_message(b"light_on")
         else:
-            board.send_message(b"light_off\n")
+            board.send_message(b"light_off")
         st.toast(f"Light is now {st.session_state.light_state}")
-
-    def timer_input_changed():
-        st.toast("Saved!")
 
     st.subheader("Set timer")
 
@@ -41,10 +39,17 @@ def loaded_screen():
     with col3:
         seconds = st.number_input("Seconds", min_value=0, max_value=59, value=0, step=1)
 
-    duration = timedelta(hours=hours, minutes=minutes, seconds=seconds)
-    total_seconds = int(duration.total_seconds())
+    if st.button("Submit timer"):
+        duration = timedelta(hours=hours, minutes=minutes, seconds=seconds)
+        total_milliseconds = int(duration.total_seconds()) * 1000
 
-    st.write(f"Timer length: {duration} ({total_seconds} seconds)")
+        board.write_key_to_storage("timer_length", total_milliseconds)
+        board.send_message(b"cancel_timer")
+        time.sleep(0.2)
+        message = f"timer={total_milliseconds}".encode("ascii")
+        board.send_message(message)
+
+        st.toast(f"Current timer length is {duration} long.")
 
 
 def unloaded_screen():
