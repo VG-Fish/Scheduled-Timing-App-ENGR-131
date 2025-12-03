@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import streamlit as st
 
 from main import TiKitBoard
@@ -29,15 +31,20 @@ def loaded_screen():
     def timer_input_changed():
         st.toast("Saved!")
 
-    timer_number_input = st.number_input(
-        "Set lighting length (in hours)",
-        min_value=0.0,
-        max_value=12.0,
-        value=6.0,
-        step=0.1,
-        format="%.1f",
-        on_change=timer_input_changed,
-    )
+    st.subheader("Set timer")
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        hours = st.number_input("Hours", min_value=0, max_value=23, value=0, step=1)
+    with col2:
+        minutes = st.number_input("Minutes", min_value=0, max_value=59, value=0, step=1)
+    with col3:
+        seconds = st.number_input("Seconds", min_value=0, max_value=59, value=0, step=1)
+
+    duration = timedelta(hours=hours, minutes=minutes, seconds=seconds)
+    total_seconds = int(duration.total_seconds())
+
+    st.write(f"Timer length: {duration} ({total_seconds} seconds)")
 
 
 def unloaded_screen():
