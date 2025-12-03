@@ -40,15 +40,6 @@ class TiKitBoard:
         with open(self.storage_file_path, "w") as f:
             f.close()
 
-    def _get_timer_data(self: Self) -> int:
-        if not self.connected:
-            return -1
-
-        with open("data.txt", "r") as f:
-            data: str = f.readline()
-            current_timer_length_ms: int = int(data.partition("=")[-1])
-        return current_timer_length_ms
-
     def _write_to_storage(self: Self) -> None:
         with open(self.storage_file_path, "w") as f:
             for key, value in self.storage.items():
