@@ -41,6 +41,9 @@ class TiKitBoard:
             f.close()
 
     def _write_to_storage(self: Self) -> None:
+        if not self.connected or self.serial is None:
+            return
+
         with open(self.storage_file_path, "w") as f:
             for key, value in self.storage.items():
                 f.write(f"{key}={value}")
