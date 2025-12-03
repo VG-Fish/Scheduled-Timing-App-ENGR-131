@@ -1,6 +1,6 @@
 import os
 import time
-from typing import Any, Dict, List, Optional, Self
+from typing import Any, Callable, Dict, List, Optional, Self
 
 import serial
 
@@ -13,6 +13,7 @@ class TiKitBoard:
         max_retries: int = 3,
         special_ending_character: bytes = b"\n",
         storage_file_path: str = "data.txt",
+        special_commands: Dict[str, Callable] = {},
     ) -> None:
         self.connected: bool = False
 
@@ -24,6 +25,8 @@ class TiKitBoard:
 
         self.storage_file_path: str = storage_file_path
         self.storage: Dict[str, Any] = {}
+
+        self.special_commands: Dict[str, Callable] = special_commands
 
     def _init_storage(self: Self) -> None:
         self.storage.clear()
@@ -79,9 +82,12 @@ class TiKitBoard:
         try:
             if self.serial.in_waiting:
                 data: bytes = self.serial.read_until(self.special_ending_character)[:-1]
+                print(f"Incoming data: {data}")
                 if data.startswith(b"timer="):
-                    key, _, value = data.partition(b"=")
-                    board.write_key_to_storage(str(key), value)
+                    _, _, value = data.partition(b"=")
+                    self.write_key_to_storage("timer_length", int(value))
+                elif data == b"timer_finished":
+                    self.write_key_to_storage("timer_length", 0)
 
         except (OSError, serial.SerialException, AttributeError):
             # lost connection mid-loop
