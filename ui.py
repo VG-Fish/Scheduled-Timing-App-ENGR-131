@@ -22,7 +22,6 @@ def loaded_screen():
 
     if st.button("Toggle light"):
         st.session_state.light_state = not st.session_state.light_state
-        print(st.session_state.light_state)
         if st.session_state.light_state:
             board.send_message(b"light_on")
         else:
