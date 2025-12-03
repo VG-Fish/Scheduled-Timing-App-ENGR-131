@@ -7,10 +7,7 @@ from main import TiKitBoard
 
 if "board" not in st.session_state:
     st.session_state.board = TiKitBoard()
-    board = st.session_state.board
-    board.connect_with_retries()
-    # Six hours is the default timer length.
-    board.write_key_to_storage("timer_length", 6 * 60 * 60 * 1000)
+    st.session_state.board.connect_with_retries()
 
 
 def loaded_screen():
