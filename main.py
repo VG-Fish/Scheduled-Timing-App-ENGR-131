@@ -125,6 +125,14 @@ class TiKitBoard:
 
         self._write_to_storage()
 
+    def remove_key_to_storage(self: Self, key: str) -> None:
+        if not self.connected or self.serial is None:
+            return
+
+        _ = self.storage.pop(key, None)
+
+        self._write_to_storage()
+
     def get_value_from_storage(self: Self, key: str) -> Optional[List[str]]:
         if not self.connected or self.serial is None:
             return
