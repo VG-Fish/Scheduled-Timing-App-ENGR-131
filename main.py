@@ -1,14 +1,8 @@
 import os
 import time
-from enum import Enum
-from typing import Optional, Self
+from typing import Any, Dict, List, Optional, Self
 
 import serial
-
-
-class LightState(Enum):
-    Off = 0
-    On = 1
 
 
 class TiKitBoard:
@@ -17,15 +11,43 @@ class TiKitBoard:
         port: str = "/dev/cu.usbmodem1103",
         baud_rate: int = 9600,
         max_retries: int = 3,
+        storage_file_path: str = "data.txt",
     ) -> None:
         self.connected: bool = False
+
         self.port: str = port
         self.baud_rate: int = baud_rate
         self.max_retries: int = max_retries
         self.serial: Optional[serial.Serial] = None
-        self.file_path: str = "data.txt"
-        self.timer_string: str = "timer_length="
-        self._init_storage()
+
+        self.storage_file_path: str = storage_file_path
+        self.storage: Dict[str, Any] = {}
+
+    def _init_storage(self: Self) -> None:
+        self.storage.clear()
+
+        if os.path.isfile(self.storage_file_path):
+            with open(self.storage_file_path, "r") as f:
+                for line in f.readlines():
+                    key, _, value = line.partition("=")
+                    self.storage[key] = value
+
+        with open(self.storage_file_path, "w") as f:
+            f.close()
+
+    def _get_timer_data(self: Self) -> int:
+        if not self.connected:
+            return -1
+
+        with open("data.txt", "r") as f:
+            data: str = f.readline()
+            current_timer_length_ms: int = int(data.partition("=")[-1])
+        return current_timer_length_ms
+
+    def _write_to_storage(self: Self) -> None:
+        with open(self.storage_file_path, "w") as f:
+            for key, value in self.storage.items():
+                f.write(f"{key}={value}")
 
     def connect_with_retries(self: Self, max_retries: Optional[int] = None) -> None:
         if max_retries is None:
@@ -46,32 +68,7 @@ class TiKitBoard:
                 num_tries += 1
                 time.sleep(1)
 
-    def _init_storage(self: Self) -> None:
-        if os.path.isfile(self.file_path):
-            return
-
-        with open(self.file_path, "w") as f:
-            f.write(
-                f"{self.timer_string}{6 * 60 * 60 * 1000}"
-            )  # 6 hours in milliseconds
-
-    def change_light_state(self: Self, light_state: LightState) -> None:
-        if not self.connected or self.serial is None:
-            return
-
-        if light_state.value == 1:
-            self.serial.write(b"light_on\n")
-        else:
-            self.serial.write(b"light_off\n")
-
-    def _get_timer_data(self: Self) -> int:
-        if not self.connected:
-            return -1
-
-        with open("data.txt", "r") as f:
-            data: str = f.readline()
-            current_timer_length_ms: int = int(data.partition("=")[-1])
-        return current_timer_length_ms
+        self._init_storage()
 
     def check_serial(self: Self) -> None:
         if not self.connected or self.serial is None:
@@ -112,3 +109,29 @@ class TiKitBoard:
             self.serial = None
             print("No longer have serial in is_board_connected")
         return self.connected
+
+    def send_message(self: Self, message: bytes) -> None:
+        if not self.connected or self.serial is None:
+            return
+
+        self.serial.write(message)
+
+    def write_key_to_storage(self: Self, key: str, value: Any) -> None:
+        if not self.connected or self.serial is None:
+            return
+
+        self.storage[key] = value
+
+        self._write_to_storage()
+
+    def get_value_from_storage(self: Self, key: str) -> Optional[List[str]]:
+        if not self.connected or self.serial is None:
+            return
+
+        return self.storage.get(key, None)
+
+    def get_full_storage(self: Self) -> Optional[Dict[str, Any]]:
+        if not self.connected or self.serial is None:
+            return
+
+        return self.storage

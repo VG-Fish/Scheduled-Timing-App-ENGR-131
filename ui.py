@@ -1,13 +1,17 @@
 import streamlit as st
 
-from main import LightState, TiKitBoard
+from main import TiKitBoard
 
 if "board" not in st.session_state:
     st.session_state.board = TiKitBoard()
-    st.session_state.board.connect_with_retries()
+    board = st.session_state.board
+    board.connect_with_retries()
+    # Six hours is the default timer length.
+    board.write_key_to_storage("timer_length", 6 * 60 * 60 * 1000)
 
 
 def loaded_screen():
+    board: TiKitBoard = st.session_state.board
     st.markdown("# Scheduled Timing GUI")
 
     if "light_state" not in st.session_state:
@@ -17,9 +21,9 @@ def loaded_screen():
         st.session_state.light_state = not st.session_state.light_state
         print(st.session_state.light_state)
         if st.session_state.light_state:
-            st.session_state.board.change_light_state(LightState.On)
+            board.send_message(b"light_on\n")
         else:
-            st.session_state.board.change_light_state(LightState.Off)
+            board.send_message(b"light_off\n")
         st.toast(f"Light is now {st.session_state.light_state}")
 
     def timer_input_changed():
@@ -45,7 +49,6 @@ def unloaded_screen():
 def draw():
     board: TiKitBoard = st.session_state.board
 
-    print(f"Is board connected: {board.is_board_connected()}")
     if board.is_board_connected():
         loaded_screen()
         board.check_serial()
