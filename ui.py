@@ -9,13 +9,13 @@ if "board" not in st.session_state:
     st.session_state.board = TiKitBoard()
     st.session_state.board.connect_with_retries()
 
+if "light_state" not in st.session_state:
+    st.session_state.light_state = False
+
 
 def loaded_screen():
     board: TiKitBoard = st.session_state.board
     st.markdown("# Scheduled Timing Test Mode GUI")
-
-    if "light_state" not in st.session_state:
-        st.session_state.light_state = False
 
     if st.button("Toggle light"):
         st.session_state.light_state = not st.session_state.light_state
@@ -24,6 +24,11 @@ def loaded_screen():
         else:
             board.send_message(b"light_off")
         st.toast(f"Light is now {st.session_state.light_state}")
+
+    if st.checkbox("Bypass light setting"):
+        board.send_message(b"ignore_ambient_light")
+    else:
+        board.send_message(b"factor_ambient_light")
 
     st.subheader("Set timer")
 
