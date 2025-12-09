@@ -4,6 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ti-kit-board-communication"
+description = "This project creates a web app using the streamlit Python library to interact with the TiKit board visually."
+readme = "README.md"
 version = "0.1.0"
 requires-python = ">=3.13.0"
 dependencies = ["pyserial"]
