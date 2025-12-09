@@ -7,3 +7,25 @@ name = "ti-kit-board-communication"
 version = "0.1.0"
 requires-python = ">=3.13.0"
 dependencies = ["pyserial"]
+authors = [
+    { name = "Vishwesswaran Gopal", email = "vishy1290@gmail.com" },
+]
+maintainers = [
+    { name = "Vishwesswaran Gopal", email = "vishy1290@gmail.com" },
+]
+keywords = ["embedded systems", "python", "MSP-EXP430FR5994", "TiKit"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Embedded Systems",
+    "Topic :: Software Development :: Libraries"
+]
+
+[tool.hatch.build.targets.sdist]
+only-include = ["main.py"]
+
+[tool.hatch.build.targets.wheel]
+only-include = ["main.py"]
