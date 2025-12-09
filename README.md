@@ -1,1 +1,6 @@
-The goal of this project is to establish a means to communicate data between the TiKit board and the developer's computer.
+# Scheduled Timing Prototype Web App for ENGR 13100 @ Purdue
+
+## Important Links
+- [TiKit Board Information](https://engineering.purdue.edu/fye_tikit/)
+
+## This project creates a web app using the streamlit Python library to interact with the TiKit board visually.
