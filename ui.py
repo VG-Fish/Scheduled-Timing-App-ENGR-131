@@ -6,7 +6,7 @@ import streamlit as st
 from main import TiKitBoard
 
 if "board" not in st.session_state:
-    st.session_state.board = TiKitBoard()
+    st.session_state.board = TiKitBoard(port="/dev/cu.usbmodem1103")
     st.session_state.board.connect_with_retries()
 
 if "light_state" not in st.session_state:
@@ -64,7 +64,16 @@ def draw():
 
     if board.is_board_connected():
         loaded_screen()
-        board.check_serial()
+
+        data = board.read_serial()
+        if data is None:
+            return
+
+        if data.startswith(b"timer="):
+            _, _, value = data.partition(b"=")
+            board.write_key_to_storage("timer_length", int(value))
+        elif data == b"timer_finished":
+            board.write_key_to_storage("timer_length", 0)
     else:
         unloaded_screen()
         board.connect_with_retries(max_retries=1)

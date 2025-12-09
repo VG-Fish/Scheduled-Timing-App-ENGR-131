@@ -1,6 +1,6 @@
 import os
 import time
-from typing import Any, Callable, Dict, List, Optional, Self
+from typing import Any, Dict, List, Optional, Self
 
 import serial
 
@@ -8,12 +8,11 @@ import serial
 class TiKitBoard:
     def __init__(
         self: Self,
-        port: str = "/dev/cu.usbmodem1103",
+        port: str,
         baud_rate: int = 9600,
         max_retries: int = 3,
         special_ending_character: bytes = b"\n",
         storage_file_path: str = "data.txt",
-        special_commands: Dict[str, Callable] = {},
     ) -> None:
         self.connected: bool = False
 
@@ -25,8 +24,6 @@ class TiKitBoard:
 
         self.storage_file_path: str = storage_file_path
         self.storage: Dict[str, Any] = {}
-
-        self.special_commands: Dict[str, Callable] = special_commands
 
     def _init_storage(self: Self) -> None:
         self.storage.clear()
@@ -69,7 +66,7 @@ class TiKitBoard:
 
         self._init_storage()
 
-    def check_serial(self: Self) -> None:
+    def read_serial(self: Self) -> Optional[bytes]:
         if not self.connected or self.serial is None:
             return
 
@@ -77,11 +74,7 @@ class TiKitBoard:
             if self.serial.in_waiting:
                 data: bytes = self.serial.read_until(self.special_ending_character)[:-1]
                 print(f"Incoming data: {data}")
-                if data.startswith(b"timer="):
-                    _, _, value = data.partition(b"=")
-                    self.write_key_to_storage("timer_length", int(value))
-                elif data == b"timer_finished":
-                    self.write_key_to_storage("timer_length", 0)
+                return data
 
         except (OSError, serial.SerialException, AttributeError):
             self.connected = False
