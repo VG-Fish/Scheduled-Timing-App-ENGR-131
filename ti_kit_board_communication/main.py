@@ -1,6 +1,6 @@
 import os
 import time
-from typing import Any, Dict, List, Optional, Self
+from typing import Any, Dict, Optional, Self
 
 import serial
 
