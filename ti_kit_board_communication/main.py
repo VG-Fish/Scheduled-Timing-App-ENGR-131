@@ -126,7 +126,7 @@ class TiKitBoard:
 
         self._write_to_storage()
 
-    def get_value_from_storage(self: Self, key: str) -> Optional[List[str]]:
+    def get_value_from_storage(self: Self, key: str) -> Optional[Any]:
         if not self.connected or self.serial is None:
             return
 
