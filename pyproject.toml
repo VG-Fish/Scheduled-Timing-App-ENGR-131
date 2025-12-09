@@ -27,7 +27,7 @@ classifiers = [
 ]
 
 [tool.hatch.build.targets.sdist]
-only-include = ["main.py"]
+packages = ["ti_kit_board_communication"]
 
 [tool.hatch.build.targets.wheel]
-only-include = ["main.py"]
+packages = ["ti_kit_board_communication"]

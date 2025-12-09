@@ -3,7 +3,7 @@ from datetime import timedelta
 
 import streamlit as st
 
-from main import TiKitBoard
+from ti_kit_board_communication.main import TiKitBoard
 
 if "board" not in st.session_state:
     st.session_state.board = TiKitBoard(port="/dev/cu.usbmodem1103")
