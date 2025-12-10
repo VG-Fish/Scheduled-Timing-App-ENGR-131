@@ -17,6 +17,8 @@ The `pyserial` Python library was used to establish a connection between the TiK
   - `pip install ti_kit_board_communication`
 2. Import the Python library in your code:
   - `from ti_kit_board_communication.main import TiKitBoard`
+3. Read the project docs here:
+  - [Docs](https://vg-fish.github.io/Scheduled-Timing-App-ENGR-131/ti_kit_board_communication/main.html)
 
 
 
