@@ -10,17 +10,6 @@ class TiKitBoard:
     This class provides a mean to establish a connection between Purdue's FYE TI Kit board and the connected computer.
     Additionally, this class provides useful methods to write information to the host computer, allowing data to persist
     beyond sessions.
-
-    Methods
-    ----------
-    1. `connect_with_retries(self: Self, max_retries: Optional[int] = None) -> None`
-    2. `read_serial(self: Self) -> Optional[bytes]`
-    3. `is_board_connected(self: Self) -> bool`
-    4. `send_message(self: Self, message: bytes) -> None`
-    5. `write_key_to_storage(self: Self, key: str, value: Any) -> None`
-    6. `remove_key_from_storage(self: Self, key: str) -> None`
-    7. `get_value_from_storage(self: Self, key: str) -> Optional[Any]`
-    8. `get_full_storage(self: Self) -> Optional[Dict[str, Any]]`
     """
 
     def __init__(
