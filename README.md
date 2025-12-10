@@ -27,6 +27,31 @@ _Check out `example/ui.py` in this Github repo to see some example usage._
 ### Goal:
 The goal of the scheduled timing prototype was to create a timer-based intelligent lighting system that combines sunlight sensing with automated LED supplementation. The web app and TiKit Board are shown below.
 
+### Key points:
+
+1. Created the `TiKitBoard` object using:
+```python 
+st.session_state.board = TiKitBoard(port="/dev/cu.usbmodem1103")
+st.session_state.board.connect_with_retries()
+```
+2. Turned the board's LED on and off using:
+```python
+if st.session_state.light_state:
+    board.send_message(b"light_on")
+else:
+    board.send_message(b"light_off")
+```
+3. Saved the time remaining on the timer using:
+```python
+board.write_key_to_storage("timer_length", int(value))
+```
+4. Updated the UI and checked the serial connection every second using:
+```python
+@st.fragment(run_every="1s")
+```
+  - _Change `"1s"` if you want the UI or serial connection to be checked more frequently_
+
+### Images
 
 <img src="images/web_ui.png" alt="Logo" width="1080" />
 
