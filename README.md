@@ -51,7 +51,7 @@ board.write_key_to_storage("timer_length", int(value))
 ```python
 @st.fragment(run_every="1s")
 ```
-  - _Change `"1s"` if you want the UI or serial connection to be checked more frequently_
+  - _Change `"1s"` to something quicker if you want the UI or serial connection to be checked more frequently._
 
 ### Images
 
