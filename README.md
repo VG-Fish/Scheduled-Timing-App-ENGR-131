@@ -55,10 +55,10 @@ board.write_key_to_storage("timer_length", int(value))
 
 ### Images
 
-<img src="images/web_ui.png" alt="Logo" width="1080" />
+<img src="images/web_ui.png" alt="Image of web app." width="1080" />
 
 *Web app*
 
-<img src="images/board_picture.png" alt="Logo" width="1080" />
+<img src="images/board_picture.png" alt="Image of the board and all connected components for the scheduled timing prototype." width="1080" />
 
 *TiKit Board*
