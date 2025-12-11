@@ -52,6 +52,12 @@ board.write_key_to_storage("timer_length", int(value))
 @st.fragment(run_every="1s")
 ```
   - _Change `"1s"` to something quicker if you want the UI or serial connection to be checked more frequently._
+5. Use the following code to send information to the computer in the `loop()` or `setup()` function:
+```c
+Serial.write("<YOUR_STRING><YOUR_ENDING_CHARCTER>");
+```
+ - _Your ending character should be the same on the board and computer side. Use the `special_ending_character` parameter
+ in the `TiKitBoard()` constructor to change the default ending charcter._
 
 ### Images
 
